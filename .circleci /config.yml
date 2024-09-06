@@ -1,0 +1,27 @@
+version: 2.1
+jobs:
+  smoke-test:
+    docker:
+      - image: curlimages/curl:latest
+    steps:
+      - checkout
+      - run:
+          name: Smoke Test
+          command: |
+            curl --fail $URL
+  load-test:
+    docker:
+      - image: williamyeh/wrk
+    steps:
+      - checkout
+      - run:
+          name: Run load tests
+          command: |
+            wrk -t2 -c10 -d1m $URL
+workflows:
+  test:
+    jobs:
+      - smoke-test:
+          context: my-context
+      - load-test:
+          context: my-context
